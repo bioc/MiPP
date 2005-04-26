@@ -7,7 +7,8 @@ Finds optimal sets of genes for classification
 \usage{
 mipp(x, y, x.test = NULL, y.test = NULL, probe.ID = NULL, 
     rule = "lda", method.cut = "t.test", percent.cut = 0.01, 
-    model.sMiPP.margin = 0.01, nfold = 5, p.test = 1/3, n.split = 20, 
+    model.sMiPP.margin = 0.01, min.sMiPP = 0.85, n.drops = 2, 
+    nfold = 5, p.test = 1/3, n.split = 20, 
     n.split.eval = 100) 
 }
 
@@ -21,6 +22,10 @@ mipp(x, y, x.test = NULL, y.test = NULL, probe.ID = NULL,
 \item{method.cut}{method for pre-selection; t-test is available.}
 \item{percent.cut}{proportion of pre-selected genes; the default is 0.01.}
 \item{model.sMiPP.margin}{smallest set of genes s.t. sMiPP <= (max sMiPP-model.sMiPP.margin); the default is 0.01.}
+\item{min.sMiPP}{Adding genes stops if max sMiPP is at least min.sMiPP; 
+the default is 0.85.} 
+\item{n.drops}{Adding genes stops if sMiPP decreases (n.drops) times, in 
+addition to min.sMiPP criterion.; the default is 2.} 
 \item{nfold}{number of folds; default is 5.}
 \item{p.test}{partition percent of train and test samples when test samples are not available; the default is 1/3 for test set.}
 \item{n.split}{number of splits; the default is 20.}
@@ -35,15 +40,15 @@ mipp(x, y, x.test = NULL, y.test = NULL, probe.ID = NULL,
 }
 
 \references{
-Soukup M., Cho H., and Lee J.K. (2005) Robust classification modeling on microarray data 
+Soukup M, Cho H, and Lee JK (2005). Robust classification modeling on microarray data 
 using misclassification penalized posterior, Bioinformatics (forthcoming)
 
-Soukup M. and Lee J.K. (2004) Developing optimal prediction models for cancer classification 
+Soukup M and Lee JK (2004). Developing optimal prediction models for cancer classification 
 using gene expression data, Journal of Bioinformatics and Computational Biology, 1(4) 681-694
 }
 
 \author{
- Soukup M., Cho H., and Lee J.K. 
+ Soukup M, Cho H, and Lee JK 
 }
 
 

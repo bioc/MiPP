@@ -24,18 +24,18 @@
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
 \newcommand{\Rfunarg}[1]{{\textit{#1}}}
 
-\newcommand{\acr}{MiPP}
     \newcommand{\word}{Misclassification-Penalized Posteriors}
     \newcommand{\statm}{$\psi_p$}
-     \newcommand{\acrs}{MiPP}
+     \newcommand{\acr}{MiPP}
+     \newcommand{\acrs}{MiPP }
     \newcommand{\words}{Misclassification-Penalized Posteriors }
     \newcommand{\statms}{$\psi_p$ }
     \newcommand{\stat}{\psi_p}
 
 
-\author{Mat Soukup, HyungJun Cho and Jae K. Lee}
+\author{Mat Soukup, HyungJun Cho, and Jae K. Lee}
 \begin{document}
-\title{How to use MiPP Package}
+\title{How to use the MiPP Package}
 
 \maketitle
 \tableofcontents
@@ -46,29 +46,30 @@ based upon the \words (\acr) as discussed in Section 2. The construction of the
 model is based upon a training data set and the estimated actual
 performance of the model is based upon an independent data set.
 When no clear distinction between the training and independent
-data sets exists, the cross-validation technique is used. 
+data sets exists, the cross-validation technique is used to estimate actual performance. 
 For the detailed algorithms, see Soukup, Cho, and Lee (2005) and Soukup and Lee (2004).  
-The \Rpackage{MiPP} package employ libraries \Rpackage{MASS} 
+The \Rpackage{MiPP} package employs libraries \Rpackage{MASS} 
 for LDA/QDA (linear/quadratic discrimant analysis) and \Rpackage{e1071} for SVM (support vector machine). 
-\Rpackage{e1071} should be installed by users.
+Users should install the \Rpackage{e1071} package from the main web page of R (http://www.r-project.org/).
+
 
 \section{\words (\acr)}\label{mipp}
 In the above section, estimated actual performance is mentioned a
-number of times. Classically, the accuracy of a classification is
-done by reporting it's estimated actual error rate. However, error
+number of times. Classically, the accuracy of a classification model is
+done by reporting its estimated actual error rate. However, error
 rate fails to take into account how likely a particular sample
 belongs to a given class and dichotomizes the data into yes the
 sample was correctly classified or no the sample was NOT correctly
 classified. Although error rate, plays a key role in how well a
-classification model performs it fails to take into account all
+classification model performs, it fails to take into account all
 the information that is available from a classification rule.
 
-The \words (\acrs) takes into account how likely a sample belongs
+The \words (\acr) takes into account how likely a sample belongs
 to a given class by using a posterior probability of correct
-classification. \acrs also adjusts it's definition anytime a
+classification. \acrs also adjusts its definition any time a
 sample is misclassified by subtracting a 1 from the posterior
 probability of correct classification resulting in a negative
-value of \acrs. If we define the posterior probability of correct
+value of \acr. If we define the posterior probability of correct
 classification using genes $\mathbf{x}$ as $\hat{f}(\mathbf{x})$,
 \acrs can be calculated as
 \begin{eqnarray}
@@ -86,13 +87,12 @@ probabilities of correction classification increase, the number of
 misclassified samples decreases, or both of these occur.
 
 We standardize the MiPP score divided by the number of samples in each data set, 
-as denoted sMiPP. Thus, the range of sMiPP is from -1 to 1. 
-The more accurate model has the sMiPP score that is closer to 1.
+denoted as sMiPP. Thus, the range of sMiPP is from -1 to 1. Note that as accuracy increases, sMiPP converges to 1. 
 
 Some basic properties of \acrs are that the maximum value it can
-take is equal to the sample size, and on the flip side, the
-minimum value is equal to the negation of the sample size. Under a
-pure random model, the expected value of \acrs is equal to zero.
+take is equal to the sample size (or $sMiPP=1$), and on the flip side, the
+minimum value is equal to the negation of the sample size (or $sMiPP=-1$). Under a
+pure random model, the expected value of \acrs is equal to zero (or $sMiPP=0$).
 The variance is derived and is available from the first author for
 the two class case, however an explicit value for more than two
 classes can not be derived analytically. Thus, a bootstrapped
@@ -102,19 +102,20 @@ estimate is the preferred method of estimating the variance.
 
 \section{Examples}
 
-\subsection{Acute leukemia data:} 
-This data has been frequently
+\subsection{Acute Leukemia Data:} 
+This data set has been frequently
 used for testing various methods in classification and prediction of
 cancer sub-types. Two distinct subsets of array data for AML and ALL
 leukemia patients are available: a training set of 27 ALL and 11 AML
 samples and a test set of 20 ALL and 14 AML samples. The independent
-set was from adult bone marrow samples whereas the independent set
+set was from adult bone marrow samples, whereas the independent set
 was from 24 bone marrow samples, 10 from peripheral blood samples,
-and four of the AML samples from adults. Gene expression levels
+and 4 of the AML samples from adults. Gene expression levels
 contain probes for 6817 human genes from Affymetrix\texttrademark
-oligonucleotide microarrays. Note that a sbuset of genes (713 probe sets) 
+oligonucleotide microarrays. Note that a subset of genes (713 probe sets) 
 was stored into the \Rpackage{MiPP} package. 
 
+\newpage
 To run  \Rpackage{MiPP}, the data can be prepared as follows.
 
 \begin{verbatim}
@@ -132,6 +133,7 @@ y.train <- factor(c(rep("ALL",27),rep("AML",11)),levels=c("ALL","AML"),
 x.test <- leukemia[,39:72]
 y.test <- factor(c(rep("ALL",20),rep("AML",14)),levels=c("ALL","AML"), 
                       labels=c("ALL", "AML"))
+
 \end{verbatim}
 
 Since two distinct data sets exist,  the model is constructed on the training data and evaluated on the test data set 
@@ -142,9 +144,12 @@ out <- mipp(x=x.train, y=y.train, x.test=x.test, y.test=y.test,
             nfold=5, percent.cut=0.05, rule="lda")
 \end{verbatim}
 
-This sequentially selects genes one gene at a time with the LDA rule and 5-fold cross-validation on the training set.
-To reduce computing time, it pre-selects the most plausuable 5\% out of 713 genes by the two-sample t-test, and then performs gene selection.
-However, use percent.cut=1 to utilize all genes without pre-selection. The above command generates the following output.
+This sequentially selects genes one gene at a time with the LDA rule (\Rfunarg{rule="lda"}) 
+and 5-fold cross-validation (\Rfunarg{nfold=5}) on the training set.
+To reduce computing time, it pre-selects the most plausuable 5\% out of 713 genes 
+by the two-sample t-test (\Rfunarg{percent.cut=0.05}), 
+and then performs gene selection.
+To utilize all genes without pre-selection, set the argument \Rfunarg{percent.cut=1}. The above command generates the following output.
 
 \begin{verbatim}     
 out$model
@@ -158,30 +163,32 @@ out$model
 6     6  635 0.00000000 33.75339 0.9927467     **
 7     7  648 0.00000000 33.63446 0.9892489       
 8     8  181 0.02941176 31.98469 0.9407261   
+
 \end{verbatim}
 
-The gene model with the maximum sMiPP is indicated by two stars (**).
-The parsimonious model (indicated by *) is the smallest one of gene models with sMiPPs greater than or equal to 
-(max sMiPP - 0.01).  In this example, however, the maximum and parsimonious models (indicated by **) are the same.
+The gene model with the maximum sMiPP is indicated by one star (*) and 
+the parsimonious model (indicated by **) contains the fewest number of genes with sMiPP greater than or equal to 
+(max sMiPP - 0.01).  In this example, the maximum and parsimonious models (indicated by **) are the same.
 Thus, the final model with sMiPP 0.993 contains genes 571, 436, 366, 457, 413, and 635.
+Note that genes listed in the output correspond to the column number of the matrices.
 
-
-\subsection{Colon cancer Data:} 
+\subsection{Colon Cancer Data:} 
 The colon cancer data set
 consists of the 2000 genes with the highest minimal intensity across
 the 62 tissue samples out of the original $6,500^+$ genes. The data
-set is filtered using the procedures described at their web site.
+set is filtered using the procedures described at the author's web site.
 The 62 samples consist of 40 colon tumor tissue samples and 22
-normal colon tissue samples(Alon \emph{et al.}, 1999). Li \emph{et
+normal colon tissue samples (Alon \emph{et al.}, 1999). Li \emph{et
 al.} (2001) identified 5 samples (N34, N36, T30, T33, and T36) which
 were likely to have been contaminated. As a result, these five
 samples are excluded from any future analysis; our error rate would
 be higher if they were included.
 
 Since we are working with a small data set (57 samples), we will be
-implementing the procedures described above. The training data set
-contains 38 samples (25 tumor and 13 normal samples), and the test
-data set contains 19 samples (12 tumor and 7 normal). The choice of
+implementing cross-validation techniques. With the lack of a 'true' independent test set, we randomly create 
+a training data set with 38 samples (25 tumor and 13 normal) and an independent data set with 19 samples 
+(12 tumor and 7 normal).  Since this is a random creation of the data set, it would be of interest to see what model is
+selected based upon a different random split of the data. Note that the choice of
 the sizes of the training and independent test set is somewhat
 arbitrary, but consistent results were found using a training and
 test set of sizes 29 (19 tumor and 10 normal) and 28 (18 tumor and
@@ -198,12 +205,13 @@ x <- x[,-c(51,55,45,49,56)]
 y <- y[ -c(51,55,45,49,56)]
 
 out <- mipp(x=x, y=y, nfold=5, p.test=1/3, n.split=20, n.split.eval=100, 
-            precent.cut = 0.1 , rule="lda")
+            percent.cut = 0.1 , rule="lda")
 
 \end{verbatim}
-This divides the whole data into two groups for training (two-third) and testing (one-third) (p.test = 1/3), 
-and  performs the forward gene selection, like for the acute leukemia data.  
-Such splitting and selecting are repeated 20 times (n.split=20), generating the following output.
+This divides the whole data into two groups for training (two-third) and testing (one-third) (\Rfunarg{p.test = 1/3}) 
+and  performs the forward gene selection as done with the acute leukemia data.  
+Splitting of the data set into training and independent dat seta and then selecting a model for a given split 
+are repeated 20 times (\Rfunarg{n.split=20}). This generates the following output.
 
 \begin{verbatim}
 
@@ -233,14 +241,19 @@ out$model
 .
 .
 
+
 128    20     1  163 0.10526316 13.724261 0.7223295       
 129    20     2  177 0.00000000 18.774879 0.9881515     **
 130    20     3  185 0.00000000 18.825061 0.9907927      *
 131    20     4  182 0.05263158 17.033708 0.8965109       
 132    20     5   29 0.00000000 18.676012 0.9829480       
+
+
+
 \end{verbatim}
 
-For each split, the final model is evaluated by independent 100 splits (n.split.eval=100), generating the following output. 
+For each split, the parsimonious model identified (denoted as **) is evaluated by an 
+independent 100 splits (n.split.eval=100) generating the following output. 
 
 \begin{verbatim}     
 out$model.eval
@@ -293,11 +306,11 @@ S20 0.9576879 0.9776923 0.9936058
 \vspace{.5in}
 {\large \bf Reference}
 \begin{itemize}
-\item[]     Soukup M., Cho H., and Lee J.K. (2005) Robust classification
+\item[]     Soukup M, Cho H, and Lee JK (2005). Robust classification
      modeling on microarray data  using misclassification penalized
      posterior, {\it Bioinformatics} (forthcoming).
 \item[]
-     Soukup M. and Lee J.K. (2004) Developing optimal prediction models
+     Soukup M and Lee JK (2004). Developing optimal prediction models
      for cancer classification  using gene expression data, {\it Journal of
      Bioinformatics and Computational Biology}, 1(4) 681-694.
 \end{itemize}

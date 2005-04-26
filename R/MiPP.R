@@ -22,7 +22,8 @@
 
 ######START#######################################################################################
 mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda", 
-                 method.cut="t.test", percent.cut = 0.01, model.sMiPP.margin=0.01, 
+                 method.cut="t.test", percent.cut = 0.01, 
+                 model.sMiPP.margin=0.01, min.sMiPP=0.85, n.drops=2,
                  nfold=5, p.test=1/3, n.split=20, n.split.eval=100){
 
      if(length(probe.ID)==0) probe.ID <- 1:nrow(x)
@@ -47,12 +48,18 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         y.test <- factor(y.test) 
 
         #pre-selection
+        pre.model <- "ALL"
         ii <- 1:ncol(x)
-        if(percent.cut < 1) ii <- pre.select(x, y, percent.cut=percent.cut)
+        if(percent.cut < 1) {
+           ii <- pre.select(x, y, percent.cut=percent.cut)
+           pre.model <- ii
+          
+        }
         x.tr <- x[,ii]; y.tr <- y
         x.te <- x.test[,ii]; y.te <- y.test
 
-        out <- mipp.rule(x.train=x.tr, y.train=y.tr, x.test=x.te, y.test=y.te, nfold=nfold, rule=rule) 
+        out <- mipp.rule(x.train=x.tr, y.train=y.tr, x.test=x.te, y.test=y.te, 
+                         nfold=nfold, min.sMiPP=min.sMiPP, n.drops=n.drops, rule=rule) 
         out[,2] <- probe.ID[ii[out[,2]]]
      
         Select <- rep(" ", nrow(out))
@@ -61,7 +68,7 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         out <- cbind(out, Select)
 
         print("Done.")
-        return(list(rule=rule, nfold=nfold, pre.model=ii, model=out)) 
+        return(list(rule=rule, nfold=nfold, pre.model=pre.model, model=out)) 
 
      }
 
@@ -85,7 +92,7 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         x.tr <- x[,ii]; y.tr <- y
 
         out <- cv.mipp.rule(x=x.tr, y=y.tr, nfold=nfold, p.test=p.test, n.split=n.split, n.split.eval=n.split.eval,
-                               model.sMiPP.margin=model.sMiPP.margin, rule=rule)
+                               model.sMiPP.margin=model.sMiPP.margin, min.sMiPP=min.sMiPP, n.drops=n.drops, rule=rule)
 
         out$CV.out$Gene <- probe.ID[ii[out$CV.out$Gene]]
 
@@ -109,7 +116,8 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
 
 
 
-cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval, model.sMiPP.margin, rule) {
+cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval, 
+                         model.sMiPP.margin=0.01, min.sMiPP=0, n.drops=n.drops, rule="lda") {
 
     n.gene <- ncol(x)
     CV.out <- data.frame(matrix(NA, n.split, 7))
@@ -139,7 +147,8 @@ print(iter)
         y.train <- y[-i.test]
         y.test  <- y[ i.test]
 
-        tmp <- mipp.rule(x.train=x.train,y.train=y.train,x.test=x.test,y.test=y.test,nfold=nfold, rule=rule)
+        tmp <- mipp.rule(x.train=x.train,y.train=y.train,x.test=x.test,y.test=y.test,
+                         nfold=nfold, min.sMiPP=min.sMiPP, n.drops=n.drops, rule=rule)
 
         Split <- rep(iter, nrow(tmp))
         Select <- rep(" ", nrow(tmp))
@@ -148,6 +157,7 @@ print(iter)
         gene.list[iter,1:j] <- tmp$Gene[1:j]
         tmp <- cbind(Split, tmp, Select)
         CV.out <- rbind(CV.out, tmp)
+
      }
      
      tmp <- apply(gene.list, 2, is.na)
@@ -201,7 +211,7 @@ print(iter)
 
 
 #Function to compute MiPP
-mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold, rule) {
+mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.sMiPP=0, n.drops=2, rule="lda") {
        
      n.gene <- ncol(x.train)
      n.sample.train <- nrow(x.train)
@@ -281,7 +291,13 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold, rule) {
            i.stop <- 0
         }
         else i.stop <- i.stop + 1 
-        if(i.stop >= 2) break
+
+print("OK")
+print(jj)
+print(min(unique(table(y.train)))) 
+
+        if((i.stop >= n.drops) & (max.sMiPP >= min.sMiPP)) break #NOTE
+        if(min(unique(table(y.train))) <= (jj+4)) break          #NOTE
 
     }
 
