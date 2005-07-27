@@ -42,9 +42,10 @@ get.mipp.svm.linear <- function(x.train, y.train, x.test, y.test){
 		fofx[i] <- linearkernel.decision.function(xin, x.train, fit)
 	}
 
-	prob <- 1/(1+exp(-fofx))
+      c <-1 #optimal parameter
+	prob <- 1/(1+c*exp(-fofx))
 	postdf <- data.frame(prob, True.class)
-	post.prob <- ifelse(postdf$True.class==True.class[1], 1-postdf$prob, postdf$prob)
+	post.prob <- ifelse(postdf$True.class==Pred.class, 1-postdf$prob, postdf$prob)
 
 	N <- length(y.test)
 	nMiss <- N - sum(True.class==Pred.class)

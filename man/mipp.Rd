@@ -1,6 +1,6 @@
 \name{mipp}
 \alias{mipp}
-\title{MiPP(Misclassification Penalized Posterior)-based Classification}
+\title{MiPP-based Classification}
 \description{
 Finds optimal sets of genes for classification
 }
@@ -8,7 +8,7 @@ Finds optimal sets of genes for classification
 mipp(x, y, x.test = NULL, y.test = NULL, probe.ID = NULL, 
     rule = "lda", method.cut = "t.test", percent.cut = 0.01, 
     model.sMiPP.margin = 0.01, min.sMiPP = 0.85, n.drops = 2, 
-    nfold = 5, p.test = 1/3, n.split = 20, 
+    n.fold = 5, p.test = 1/3, n.split = 20, 
     n.split.eval = 100) 
 }
 
@@ -26,7 +26,7 @@ mipp(x, y, x.test = NULL, y.test = NULL, probe.ID = NULL,
 the default is 0.85.} 
 \item{n.drops}{Adding genes stops if sMiPP decreases (n.drops) times, in 
 addition to min.sMiPP criterion.; the default is 2.} 
-\item{nfold}{number of folds; default is 5.}
+\item{n.fold}{number of folds; default is 5.}
 \item{p.test}{partition percent of train and test samples when test samples are not available; the default is 1/3 for test set.}
 \item{n.split}{number of splits; the default is 20.}
 \item{n.split.eval}{numbr of splits for evalutation; the default is 100.}
@@ -73,7 +73,7 @@ y.test <- factor(c(rep("ALL",20),rep("AML",14)),levels=c("ALL","AML"), labels=c(
 
 
 #Compute MiPP
-out <- mipp(x=x.train, y=y.train, x.test=x.test, y.test=y.test, nfold=5, percent.cut=0.05, rule="lda")
+out <- mipp(x=x.train, y=y.train, x.test=x.test, y.test=y.test, n.fold=5, percent.cut=0.05, rule="lda")
 
 #Print candidate models
 out$model
@@ -101,7 +101,7 @@ x <- x[,-c(51,55,45,49,56)]
 y <- y[ -c(51,55,45,49,56)]
 
 #Compute MiPP
-out <- mipp(x=x, y=y, nfold=5, p.test=1/3, n.split=5, n.split.eval=100, 
+out <- mipp(x=x, y=y, n.fold=5, p.test=1/3, n.split=5, n.split.eval=100, 
 percent.cut= 0.1, rule="svmlin")
 
 #Print candidate models for each split

@@ -51,16 +51,16 @@ get.mipp.svm.rbf <- function(x.train, y.train, x.test, y.test){
 		fofx[i] <- rbfkernel.decision.function(xin, x.train, fit)
 	}
 
-	prob <- 1/(1+exp(-fofx))
-	lev.y <- levels(y.test)
+      c <- 100 #optimal parameter?
+	prob <- 1/(1+c*exp(-fofx))
 	postdf <- data.frame(prob, True.class)
-	post.prob <- ifelse(postdf$True.class==True.class[1], 1-postdf$prob, postdf$prob)
+	post.prob <- ifelse(postdf$True.class==Pred.class, 1-postdf$prob, postdf$prob)
 
 	N <- length(y.test)
 	nMiss <- N - sum(True.class==Pred.class)
 	Er <- nMiss/N
 	MiPP <- sum(post.prob)-nMiss
 	sMiPP <- MiPP/N
-	
+
 	return(list(N.Miss=nMiss, ErrorRate=Er, MiPP=MiPP, sMiPP=sMiPP))
 }
