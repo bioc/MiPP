@@ -8,32 +8,41 @@
 #
 #        Mat Soukup, HyungJun Cho, and Jae K. Lee
 #
-#                   Version 1.0.0 (2005-04-14)   
+#                   Version 1.1.1 (2005-07-20)   
 #
 ##########################################################################
 
-
 .First.lib <- function(lib, pkg) { 
-   cat("MiPP version 1.0.0 (2005-04-18)\n") 
+   cat("MiPP version 1.1.1 (2005-07-20)\n") 
    invisible()
    if(.Platform$OS.type=="windows" && require(Biobase) && interactive() 
    && .Platform$GUI=="Rgui") { addVigs2WinMenu("MiPP") }
 }
 
-######START#######################################################################################
+
+##########################################################################
+#
+# Main function         
+#
+##########################################################################
 mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda", 
                  method.cut="t.test", percent.cut = 0.01, 
                  model.sMiPP.margin=0.01, min.sMiPP=0.85, n.drops=2,
-                 nfold=5, p.test=1/3, n.split=20, n.split.eval=100){
+                 n.fold=5, p.test=1/3, n.split=20, n.split.eval=100){
 
      if(length(probe.ID)==0) probe.ID <- 1:nrow(x)
-     nfold <- max(2, min(nfold, nrow(x))) # 2 ~ N
+     nfold <- max(2, min(n.fold, nrow(x))) # 2 ~ N
      if(rule=="lda" | rule=="qda") require(MASS)
      if(rule=="svmlin" | rule=="svmrbf") require(e1071)
      print("Please wait...")
-     
+
+
+     #####################################     
      #when there is an indepedent test set
      if(length(x.test) > 0) {
+
+        n.train.sample <- ncol(x) 
+        n.test.sample  <- ncol(x.test)
 
         #Data manipulation
         colnames(x) <- 1:ncol(x)           
@@ -66,15 +75,23 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         i <- min(which(out$sMiPP >= max(out$sMiPP))); Select[i] <- "*"
         j <- min(which(out$sMiPP >= out$sMiPP[i]-model.sMiPP.margin)); Select[j] <- "**"
         out <- cbind(out, Select)
+ 
+        colnames(out) <- c("Order","Gene","Tr.ER","Tr.MiPP","Tr.sMiPP","Te.ER","Te.MiPP","Te.sMiPP", "Select")
+        out$Tr.ER    <- round(out$Tr.ER, 4);    out$Te.ER    <-  round(out$Te.ER, 4)
+        out$Tr.MiPP  <- round(out$Tr.MiPP, 2);  out$Te.MiPP  <-  round(out$Te.MiPP, 2)
+        out$Tr.sMiPP <- round(out$Tr.sMiPP, 4); out$Te.sMiPP <-  round(out$Te.sMiPP, 4)
 
         print("Done.")
-        return(list(rule=rule, nfold=nfold, pre.model=pre.model, model=out)) 
+        return(list(rule=rule, n.fold=n.fold, n.train.sample=n.train.sample, n.test.sample=n.test.sample, pre.model=pre.model, model=out)) 
 
      }
 
 
+     #####################################
      #when there is no indepedent test set
      if(length(x.test)==0) {  
+
+        n.sample <- ncol(x) 
 
         #Data manipulation
         colnames(x) <- 1:ncol(x)           
@@ -104,9 +121,18 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         }
 
         rownames(out$CV.out) <- 1:nrow(out$CV.out)
+        colnames(out$CV.out) <- c("Split","Order","Gene","Tr.ER","Tr.MiPP","Tr.sMiPP","Te.ER","Te.MiPP","Te.sMiPP", "Select")
+        out$CV.out$Tr.ER    <- round(out$CV.out$Tr.ER, 4);    out$CV.out$Te.ER    <-  round(out$CV.out$Te.ER, 4)
+        out$CV.out$Tr.MiPP  <- round(out$CV.out$Tr.MiPP, 2);  out$CV.out$Te.MiPP  <-  round(out$CV.out$Te.MiPP, 2)
+        out$CV.out$Tr.sMiPP <- round(out$CV.out$Tr.sMiPP, 4); out$CV.out$Te.sMiPP <-  round(out$CV.out$Te.sMiPP, 4)
+
+        n <- ncol(out$CVCV.out)
+        out$CVCV.out[,(n-5):n]    <- round(out$CVCV.out[,(n-5):n], 4)
+        out$CVCV.out[,(n-4)]    <- round(out$CVCV.out[,(n-4)], 2)
+
         print("Done.")
 
-        return(list(rule=rule, nfold=nfold, n.split=n.split, n.split.eval=n.split.eval, 
+        return(list(rule=rule, n.fold=n.fold, n.sample=n.sample, n.split=n.split, n.split.eval=n.split.eval, 
                     sMiPP.margin=model.sMiPP.margin, p.test=p.test,
                     pre.model=pre.model, model=out$CV.out, model.eval=out$CVCV.out)) 
 
@@ -116,24 +142,31 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
 
 
 
+##########################################################################
+#
+# MiPP-based selection with cross-validation         
+#
+##########################################################################
 cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval, 
                          model.sMiPP.margin=0.01, min.sMiPP=0, n.drops=n.drops, rule="lda") {
 
     n.gene <- ncol(x)
-    CV.out <- data.frame(matrix(NA, n.split, 7))
-    colnames(CV.out) <- c("Split","Order","Gene","ErrorRate","MiPP","sMiPP","Select")
+    CV.out <- data.frame(matrix(NA, n.split, 10))
+    colnames(CV.out) <- c("Split","Order","Gene","Train.ErrorRate","Train.MiPP","Train.sMiPP",
+                          "ErrorRate","MiPP","sMiPP","Select")
+    #colnames(CV.out) <- c("Split","Order","Gene","ErrorRate","MiPP","sMiPP","Select")
+
 
     u.y <- unique(y)
     n.y <- length(u.y)
 
+    #################################
     #Select genes from n.split splits
     gene.list <- data.frame(matrix(NA, n.split, n.gene))
     rownames(gene.list) <- paste("S",1:n.split, sep="")
     colnames(gene.list) <- paste("G",1:n.gene, sep="")
 
     for(iter in 1:n.split) {
-
-print(iter)
 
         i.test  <- c()
         for(i in 1:n.y) {
@@ -173,7 +206,7 @@ print(iter)
      out.sMiPP <- matrix(NA, n.split, n.split.eval)
      out2 <- data.frame(matrix(NA, n.split, 6))
      rownames(out2) <- 1:n.split 
-     colnames(out2) <- c("mean ErrorRate","mean MiPP","mean sMiPP","5% sMiPP","50% sMiPP","95% sMiPP")
+     colnames(out2) <- c("mean ER","mean MiPP","mean sMiPP","5% sMiPP","50% sMiPP","95% sMiPP")
      for(j in 1:n.split.eval) { #Splits for evaluation
         i.test  <- c()
         for(i in 1:n.y) {
@@ -201,16 +234,19 @@ print(iter)
      out2[,3] <- apply(out.sMiPP, 1, mean)
      out2[,4:6] <- t(apply(out.sMiPP, 1, quantile, probs=c(0.05, 0.50, 0.95)))
 
-    Split <- 1:n.split
-    CVCV.out <- cbind(Split, gene.list, out2)
-
-    return(list(genes=gene.list, CV.out=CV.out, CVCV.out=CVCV.out)) 
+     Split <- 1:n.split
+     CVCV.out <- cbind(Split, gene.list, out2)
+     return(list(genes=gene.list, CV.out=CV.out, CVCV.out=CVCV.out)) 
 
 }
 
 
 
-#Function to compute MiPP
+##########################################################################
+#
+# MiPP-based selection
+#
+##########################################################################
 mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.sMiPP=0, n.drops=2, rule="lda") {
        
      n.gene <- ncol(x.train)
@@ -225,11 +261,17 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
      id <- id[sort.list(i)]
      #id <- sample(id, size=n.sample.train, replace=FALSE)
         
-     opt.genes <-c()
-     opt.Er    <-c()
-     opt.MiPP    <-c()
-     opt.sMiPP    <-c()
+     opt.genes <- c()
+     opt.Er    <- c()
+     opt.MiPP  <- c()
+     opt.sMiPP <- c()
 
+     opt.Er.train    <- c()
+     opt.MiPP.train  <- c()
+     opt.sMiPP.train <- c()
+  
+
+     ##################
      #Pick 1-gene model
      out <- matrix(0, nfold, n.gene)
      for(i in 1:nfold) {
@@ -248,7 +290,8 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
      x.train.opt  <- data.frame(x.train[, opt.genes])
      x.train.cand <- x.train[,-opt.genes]
 
-     #Evaluate by DS
+
+     #Evaluate by test set
      xx.train <- data.frame(x.train[,opt.genes]); colnames(xx.train) <- opt.genes
      xx.test  <- data.frame(x.test[,opt.genes]) ; colnames(xx.test) <- opt.genes
      tmp <- get.mipp(xx.train, y.train, xx.test, y.test, rule=rule)
@@ -256,6 +299,14 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
      opt.MiPP  <-c(opt.MiPP, tmp$MiPP)
      opt.sMiPP <-c(opt.sMiPP, tmp$sMiPP)
 
+     #Evaluate by train set
+     tmp <- get.mipp(xx.train, y.train, xx.train, y.train, rule=rule)
+     opt.Er.train    <-c(opt.Er.train, tmp$ErrorRate)
+     opt.MiPP.train  <-c(opt.MiPP.train, tmp$MiPP)
+     opt.sMiPP.train <-c(opt.sMiPP.train, tmp$sMiPP)
+
+
+     ##################
      #Pick k-gene model
      i.stop <- 0 
      max.sMiPP <-  opt.sMiPP
@@ -279,11 +330,20 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
         x.train.opt  <- x.train[, opt.genes]
         x.train.cand <- x.train[,-opt.genes]
 
-        tmp <- get.mipp(x.train[,opt.genes], y.train, x.test[,opt.genes],  y.test, rule=rule)
 
+        #Evaluate by test set
+        tmp <- get.mipp(x.train[,opt.genes], y.train, x.test[,opt.genes],  y.test, rule=rule)
         opt.Er    <-c(opt.Er, tmp$ErrorRate)
         opt.MiPP  <-c(opt.MiPP, tmp$MiPP)
         opt.sMiPP <-c(opt.sMiPP, tmp$sMiPP)
+
+
+        #Evaluate by train set
+        tmp <- get.mipp(x.train[,opt.genes], y.train, x.train[,opt.genes],  y.train, rule=rule)
+        opt.Er.train    <-c(opt.Er.train, tmp$ErrorRate)
+        opt.MiPP.train  <-c(opt.MiPP.train, tmp$MiPP)
+        opt.sMiPP.train <-c(opt.sMiPP.train, tmp$sMiPP)
+
  
         #stopping rule: stop if two drops
         if(max.sMiPP < tmp$sMiPP) {
@@ -292,18 +352,20 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
         }
         else i.stop <- i.stop + 1 
 
-print("OK")
-print(jj)
-print(min(unique(table(y.train)))) 
-
-        if((i.stop >= n.drops) & (max.sMiPP >= min.sMiPP)) break #NOTE
-        if(min(unique(table(y.train))) <= (jj+4)) break          #NOTE
+        if((i.stop >= n.drops) & (max.sMiPP >= min.sMiPP)) break 
+        if(min(unique(table(y.train))) <= (jj+4)) break         
 
     }
 
+
+    ##################
+    #Output
     i <- 1:length(opt.genes)
-    final.out <- data.frame(i,opt.genes, opt.Er, opt.MiPP, opt.sMiPP)
-    colnames(final.out) <- c("Order","Gene","ErrorRate","MiPP","sMiPP")
+    final.out <- data.frame(i, opt.genes, opt.Er.train, opt.MiPP.train, opt.sMiPP.train, opt.Er, opt.MiPP, opt.sMiPP)
+    colnames(final.out) <- c("Order","Gene","Train.ErrorRate","Train.MiPP","Train.sMiPP","ErrorRate","MiPP","sMiPP")
+
+    #final.out <- data.frame(i, opt.genes, opt.Er, opt.MiPP, opt.sMiPP)
+    #colnames(final.out) <- c("Order","Gene","ErrorRate","MiPP","sMiPP")
 
     return(final.out)
 }

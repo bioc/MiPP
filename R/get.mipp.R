@@ -1,4 +1,4 @@
-#Choose rule
+#Choose a rule
 get.mipp <- function(x.train, y.train, x.test, y.test, rule){
 
      if(rule !="lda" & rule !="qda" & rule !="logistic" & rule !="svmlin" & rule !="svmrbf") 
