@@ -1,15 +1,12 @@
 Package: MiPP
-Version: 1.1.0
-Date: 2005-04-25
-Title: MiPP (Misclassification Penalized Posterior)-based
-        Classification
-Author: Mat Soukup <soukup@fda.gov>, HyungJun Cho <hcho@virginia.edu>,
-        and Jae K. Lee <jaeklee@virginia.edu>
+Version: 1.1.1
+Date: 2005-07-20
+Title: Misclassification Penalized Posterior Classification
+Author: Mat Soukup <soukup@fda.gov>, 
+        HyungJun Cho <hcho@virginia.edu>, and
+        Jae K. Lee <jaeklee@virginia.edu>
 Maintainer: HyungJun Cho <hcho@virginia.edu>
 Depends: R (>= 2.0.1), Biobase, e1071
-Description: This package finds optimal sets of genes for
-        classification
+Description: This package finds optimal sets of genes for classification
 License: GPL version 2 or newer
-URL:
-        http://www.healthsystem.virginia.edu/internet/hes/biostat/bioinformatics
-
+URL:http://www.healthsystem.virginia.edu/internet/hes/biostat/bioinformatics/
