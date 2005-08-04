@@ -199,7 +199,15 @@ as an example. For the colon data with no independent test set, \Rpackage{MiPP} 
 \begin{verbatim}
 data(colon)
 x <- mipp.preproc(colon)
-y <- colnames(colon)
+y <- factor(c("T", "N", "T", "N", "T", "N", "T", "N", "T", "N", 
+       "T", "N", "T", "N", "T", "N", "T", "N", "T", "N",
+       "T", "N", "T", "N", "T", "T", "T", "T", "T", "T", 
+       "T", "T", "T", "T", "T", "T", "T", "T", "N", "T", 
+       "T", "N", "N", "T", "T", "T", "T", "N", "T", "N", 
+       "N", "T", "T", "N", "N", "T", "T", "T", "T", "N", 
+       "T", "N"))
+
+
 
 #Deleting comtaminated chips
 x <- x[,-c(51,55,45,49,56)]

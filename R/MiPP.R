@@ -8,12 +8,12 @@
 #
 #        Mat Soukup, HyungJun Cho, and Jae K. Lee
 #
-#                   Version 1.1.1 (2005-07-20)   
+#                   Version 1.1.3 (2005-08-04)   
 #
 ##########################################################################
 
 .First.lib <- function(lib, pkg) { 
-   cat("MiPP version 1.1.1 (2005-07-20)\n") 
+   cat("MiPP version 1.1.3 (2005-08-04)\n") 
    invisible()
    if(.Platform$OS.type=="windows" && require(Biobase) && interactive() 
    && .Platform$GUI=="Rgui") { addVigs2WinMenu("MiPP") }
@@ -222,7 +222,7 @@ cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval,
         for(jj in 1:n.split) { #Split  
             k <- max(which(!is.na(gene.list[jj,])==TRUE))
             kk <- as.numeric(gene.list[jj,1:k])
-            tmp2 <- get.mipp(x.train[,kk], y.train, x.test[,kk],  y.test, rule=rule)
+            tmp2 <- get.mipp(matrix(x.train[,kk]), y.train, matrix(x.test[,kk]),  y.test, rule=rule)
             out.Er[jj,j]    <- tmp2$ErrorRate 
             out.MiPP[jj,j]  <- tmp2$MiPP
             out.sMiPP[jj,j] <- tmp2$sMiPP
@@ -278,8 +278,8 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
         y.tr <- y.train[id!=i]
         y.te <- y.train[id==i]
         for(j in 1:n.gene) {
-             x.tr <- data.frame(x.train[id!=i,j])
-             x.te <- data.frame(x.train[id==i,j]) 
+             x.tr <- data.frame(matrix(x.train[id!=i,j]))
+             x.te <- data.frame(matrix(x.train[id==i,j])) 
              out[i,j] <- get.mipp(x.tr, y.tr, x.te, y.te, rule=rule)$MiPP
         }
      }
@@ -292,8 +292,8 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
 
 
      #Evaluate by test set
-     xx.train <- data.frame(x.train[,opt.genes]); colnames(xx.train) <- opt.genes
-     xx.test  <- data.frame(x.test[,opt.genes]) ; colnames(xx.test) <- opt.genes
+     xx.train <- data.frame(matrix(x.train[,opt.genes])); colnames(xx.train) <- opt.genes
+     xx.test  <- data.frame(matrix(x.test[,opt.genes])) ; colnames(xx.test) <- opt.genes
      tmp <- get.mipp(xx.train, y.train, xx.test, y.test, rule=rule)
      opt.Er    <-c(opt.Er, tmp$ErrorRate)
      opt.MiPP  <-c(opt.MiPP, tmp$MiPP)
@@ -332,14 +332,14 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
 
 
         #Evaluate by test set
-        tmp <- get.mipp(x.train[,opt.genes], y.train, x.test[,opt.genes],  y.test, rule=rule)
+        tmp <- get.mipp(matrix(x.train[,opt.genes]), y.train, matrix(x.test[,opt.genes]),  y.test, rule=rule)
         opt.Er    <-c(opt.Er, tmp$ErrorRate)
         opt.MiPP  <-c(opt.MiPP, tmp$MiPP)
         opt.sMiPP <-c(opt.sMiPP, tmp$sMiPP)
 
 
         #Evaluate by train set
-        tmp <- get.mipp(x.train[,opt.genes], y.train, x.train[,opt.genes],  y.train, rule=rule)
+        tmp <- get.mipp(matrix(x.train[,opt.genes]), y.train, matrix(x.train[,opt.genes]),  y.train, rule=rule)
         opt.Er.train    <-c(opt.Er.train, tmp$ErrorRate)
         opt.MiPP.train  <-c(opt.MiPP.train, tmp$MiPP)
         opt.sMiPP.train <-c(opt.sMiPP.train, tmp$sMiPP)

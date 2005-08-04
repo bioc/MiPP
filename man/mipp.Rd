@@ -65,11 +65,11 @@ leukemia <- mipp.preproc(leukemia, data.type="MAS4")
 
 #Train set
 x.train <- leukemia[,1:38]
-y.train <- factor(c(rep("ALL",27),rep("AML",11)),levels=c("ALL","AML"), labels=c("ALL", "AML"))
+y.train <- factor(c(rep("ALL",27),rep("AML",11)))
 
 #Test set
 x.test <- leukemia[,39:72]
-y.test <- factor(c(rep("ALL",20),rep("AML",14)),levels=c("ALL","AML"), labels=c("ALL", "AML"))
+y.test <- factor(c(rep("ALL",20),rep("AML",14)))
 
 
 #Compute MiPP
@@ -93,7 +93,7 @@ y <- factor(c("T", "N", "T", "N", "T", "N", "T", "N", "T", "N",
        "T", "T", "T", "T", "T", "T", "T", "T", "N", "T", 
        "T", "N", "N", "T", "T", "T", "T", "N", "T", "N", 
        "N", "T", "T", "N", "N", "T", "T", "T", "T", "N", 
-       "T", "N"), levels=c("N","T"), labels=c("N", "T"))
+       "T", "N"))
 
 
 #Deleting comtaminated chips
