@@ -30,7 +30,8 @@ addition to min.sMiPP criterion.; the default is 2.}
 \item{p.test}{partition percent of train and test samples when test samples are not available; the default is 1/3 for test set.}
 \item{n.split}{number of splits; the default is 20.}
 \item{n.split.eval}{numbr of splits for evalutation; the default is 100.}
-\item{rule}{classification rule: "lda","qda","logistic","svmlin","svmbrf"; the default is "lda".}
+\item{rule}{classification rule: "lda","qda","logistic","svmlin","svmrbf"; 
+the default is "lda".}
 
 }
 
@@ -101,7 +102,8 @@ x <- x[,-c(51,55,45,49,56)]
 y <- y[ -c(51,55,45,49,56)]
 
 #Compute MiPP
-out <- mipp(x=x, y=y, n.fold=5, p.test=1/3, n.split=5, n.split.eval=100, percent.cut= 0.1, rule="lda")
+out <- mipp(x=x, y=y, n.fold=5, p.test=1/3, n.split=5, n.split.eval=100, 
+percent.cut= 0.1, rule="svmlin")
 
 #Print candidate models for each split
 out$model
