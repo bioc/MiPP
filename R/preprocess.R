@@ -6,7 +6,6 @@
 mipp.preproc <- function (x, data.type = "MAS5")
 {
 
-    #Refine!!!
     #Exclude cases with missing values
     x <- as.matrix(na.exclude(x))
  

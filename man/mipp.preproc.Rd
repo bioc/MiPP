@@ -12,7 +12,7 @@ function (x, data.type = "MAS5")
 
 \arguments{
 \item{x}{data}
-\item{data.type}{data type: MAS5 or MAS4}
+\item{data.type}{data type is MAS5, MAS4, or dChip}
 }
 
 \seealso{
