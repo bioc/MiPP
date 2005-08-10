@@ -1,12 +1,9 @@
 get.mipp.logistic <- function(x.train, y.train, x.test, y.test){
 
-	y.train <- factor(y.train)
-	levels(y.train) <- c("1","0")
-	y.test <- factor(y.test)
-	levels(y.test) <- c("1","0")
-
-        if(is.data.frame(x.train)) x.train <- as.matrix(x.train)
-        if(is.data.frame(x.test))  x.test  <- as.matrix(x.test)
+	y.train <- factor(y.train); levels(y.train) <- c("1","0")
+	y.test <- factor(y.test); levels(y.test) <- c("1","0")
+      if(is.data.frame(x.train)) x.train <- as.matrix(x.train)
+      if(is.data.frame(x.test))  x.test  <- as.matrix(x.test)
 
 	fit <- glm(y.train ~ x.train, family="binomial")
 

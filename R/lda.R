@@ -31,7 +31,6 @@ get.mipp.lda <- function(x.train, y.train, x.test, y.test){
      Er <- nMiss/nrow(dat.test)
      MiPP <- post.prob - nMiss
      sMiPP <- MiPP/N
-
      return(list(N.Miss=nMiss, ErrorRate=Er, MiPP=MiPP, sMiPP=sMiPP))
 }
 

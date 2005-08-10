@@ -1,33 +1,7 @@
-# Linear Kernel Decision Function
-linearkernel.decision.function <-function(newx, oldx, svmobj) {
-    # oldx is the original training data matrix
-    # svmobj is the name of the svm object
-
-    # Extract y*alpha:
-    	svcoefs <- svmobj$coefs
-    # Extract b:
-    	svconstant <- -1*svmobj$rho   
-    # Get the support vectors
-    	svdata <- oldx[svmobj$index,]
-    # Reformat the new x
-    	xt <- newx
-    	nrowxt <- length(oldx[1,])
-    	dim(xt) <- c(nrowxt,1)   
-    # linear kernel:
-    	prods <- svdata %*% xt   
-    # compute h(x):
-    	h <- t(prods) %*% svcoefs 
-    # compute f(x):
-    	#h + svconstant    
-    	return(h + svconstant)    
-}
-
-
 get.mipp.svm.linear <- function(x.train, y.train, x.test, y.test){
 
-        x.train <- as.matrix(x.train)
-        x.test  <- as.matrix(x.test)
-
+      if(is.data.frame(x.train)) x.train <- as.matrix(x.train)
+      if(is.data.frame(x.test))  x.test  <- as.matrix(x.test)
 	y.train <- factor(y.train)
 	y.test <- factor(y.test)
 
@@ -54,5 +28,30 @@ get.mipp.svm.linear <- function(x.train, y.train, x.test, y.test){
 	sMiPP <- MiPP/N
 	
 	return(list(N.Miss=nMiss, ErrorRate=Er, MiPP=MiPP, sMiPP=sMiPP))
+}
+
+
+# Linear Kernel Decision Function
+linearkernel.decision.function <-function(newx, oldx, svmobj) {
+    # oldx is the original training data matrix
+    # svmobj is the name of the svm object
+
+    # Extract y*alpha:
+    	svcoefs <- svmobj$coefs
+    # Extract b:
+    	svconstant <- -1*svmobj$rho   
+    # Get the support vectors
+    	svdata <- oldx[svmobj$index,]
+    # Reformat the new x
+    	xt <- newx
+    	nrowxt <- length(oldx[1,])
+    	dim(xt) <- c(nrowxt,1)   
+    # linear kernel:
+    	prods <- svdata %*% xt   
+    # compute h(x):
+    	h <- t(prods) %*% svcoefs 
+    # compute f(x):
+    	#h + svconstant    
+    	return(h + svconstant)    
 }
 
