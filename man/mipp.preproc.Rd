@@ -7,7 +7,7 @@ Preprocessing
 Performs IQR normalization, thesholding, and log2-transformation 
 }
 \usage{
-function (x, data.type = "MAS5")
+mipp.preproc(x, data.type = "MAS5")
 }
 
 \arguments{

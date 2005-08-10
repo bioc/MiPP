@@ -3,7 +3,7 @@
 ###################################################################
 ###Preprocess: normalization, thesholding, and log2 transformation
 ################################################################### 
-mipp.preproc <- function (x, data.type = "MAS5")
+mipp.preproc <- function(x, data.type = "MAS5")
 {
 
     #Exclude cases with missing values
