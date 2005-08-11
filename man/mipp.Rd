@@ -103,7 +103,7 @@ y <- y[ -c(51,55,45,49,56)]
 
 #Compute MiPP
 out <- mipp(x=x, y=y, n.fold=5, p.test=1/3, n.split=5, n.split.eval=100, 
-percent.cut= 0.1, rule="svmlin")
+percent.cut= 0.1, rule="lda")
 
 #Print candidate models for each split
 out$model
