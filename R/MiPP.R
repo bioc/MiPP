@@ -40,7 +40,7 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
      #####################################     
      #when there is an indepedent test set
      if(length(x.test) > 0) {
-
+        cat(".")
 
         #Data manipulation
         n.train.sample <- ncol(x) 
@@ -82,7 +82,7 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         out$Tr.MiPP  <- round(out$Tr.MiPP, 2);  out$Te.MiPP  <-  round(out$Te.MiPP, 2)
         out$Tr.sMiPP <- round(out$Tr.sMiPP, 4); out$Te.sMiPP <-  round(out$Te.sMiPP, 4)
 
-        cat("Done. \n")
+        cat(" Done. \n")
         return(list(rule=rule, n.fold=n.fold, n.train.sample=n.train.sample, n.test.sample=n.test.sample, pre.model=pre.model, model=out)) 
 
      }
