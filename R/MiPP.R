@@ -8,12 +8,12 @@
 #
 #        Mat Soukup, HyungJun Cho, and Jae K. Lee
 #
-#                   Version 1.1.5 (2005-08-10)   
+#                   Version 1.1.6 (2005-09-07)   
 #
 ##########################################################################
 
 .First.lib <- function(lib, pkg) { 
-   cat("MiPP version 1.1.5 \n") 
+   cat("MiPP version 1.1.6 \n") 
    invisible()
    if(.Platform$OS.type=="windows" && require(Biobase) && interactive() 
    && .Platform$GUI=="Rgui") { addVigs2WinMenu("MiPP") }
@@ -118,7 +118,7 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         out$CV.out$Gene <- probe.ID[ii[out$CV.out$Gene]]
 
         for(i in 1:n.split) {
-            k <- ncol(out$CVCV.out)-6
+            k <- ncol(out$CVCV.out)-9 ###note
             k <- max(which(!is.na(out$CVCV.out[i,1:k])))
             kk <- as.numeric(out$CVCV.out[i,2:k])
             out$CVCV.out[i,2:k] <- probe.ID[ii[kk]]
@@ -130,9 +130,9 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         out$CV.out$Tr.MiPP  <- round(out$CV.out$Tr.MiPP, 2);  out$CV.out$Te.MiPP  <-  round(out$CV.out$Te.MiPP, 2)
         out$CV.out$Tr.sMiPP <- round(out$CV.out$Tr.sMiPP, 4); out$CV.out$Te.sMiPP <-  round(out$CV.out$Te.sMiPP, 4)
 
-        n <- ncol(out$CVCV.out)
-        out$CVCV.out[,(n-5):n]    <- round(out$CVCV.out[,(n-5):n], 4)
-        out$CVCV.out[,(n-4)]    <- round(out$CVCV.out[,(n-4)], 2)
+        #n <- ncol(out$CVCV.out)
+        #out$CVCV.out[,(n-5):n]    <- round(out$CVCV.out[,(n-5):n], 4)
+        #out$CVCV.out[,(n-4)]    <- round(out$CVCV.out[,(n-4)], 2)
 
         cat("Done. \n")
 
@@ -211,7 +211,7 @@ cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval,
      out.Er    <- matrix(NA, n.split, n.split.eval)
      out.MiPP  <- matrix(NA, n.split, n.split.eval)
      out.sMiPP <- matrix(NA, n.split, n.split.eval)
-     out2 <- data.frame(matrix(NA, n.split, 6))
+     out2 <- data.frame(matrix(NA, n.split, 9))
      rownames(out2) <- 1:n.split 
      colnames(out2) <- c("mean ER","mean MiPP","mean sMiPP","5% sMiPP","50% sMiPP","95% sMiPP")
      for(j in 1:n.split.eval) { #Splits for evaluation
@@ -249,7 +249,8 @@ cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval,
      out2[,1] <- apply(out.Er, 1, mean)
      out2[,2] <- apply(out.MiPP, 1, mean)
      out2[,3] <- apply(out.sMiPP, 1, mean)
-     out2[,4:6] <- t(apply(out.sMiPP, 1, quantile, probs=c(0.05, 0.50, 0.95)))
+     out2[,4:6] <- t(apply(out.Er, 1, quantile, probs=c(0.05, 0.50, 0.95)))
+     out2[,7:9] <- t(apply(out.sMiPP, 1, quantile, probs=c(0.05, 0.50, 0.95)))
 
      Split <- 1:n.split
      CVCV.out <- cbind(Split, gene.list, out2)
