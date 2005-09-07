@@ -213,7 +213,9 @@ cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval,
      out.sMiPP <- matrix(NA, n.split, n.split.eval)
      out2 <- data.frame(matrix(NA, n.split, 9))
      rownames(out2) <- 1:n.split 
-     colnames(out2) <- c("mean ER","mean MiPP","mean sMiPP","5% sMiPP","50% sMiPP","95% sMiPP")
+     colnames(out2) <- c("mean ER","mean MiPP","mean sMiPP",
+                         "5% ER","50% ER","95% ER", 
+                         "5% sMiPP","50% sMiPP","95% sMiPP")
      for(j in 1:n.split.eval) { #Splits for evaluation
         i.test  <- c()
         for(i in 1:n.y) {
