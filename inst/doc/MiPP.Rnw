@@ -315,6 +315,32 @@ S20    0.9924    0.9972
 
 \end{verbatim}
 
+
+\subsection{Sequential selection} 
+Good classifying genes may be masked by other better classifying genes, 
+so the genes may be discovered if the other genes are not present.  
+Therefore, it is worth selecting gene models after removing genes selected in the first run.
+The \Rpackage{MiPP} package also enables to sequentailly select gene models after removing genes selected in the previous runs.
+
+For the acute leukemia data, the sequntial analysis can be performed by the following arguments in the \Rfunction{mipp.seq} function: 
+The argument \Rfunarg{n.seq=3} means that the sequentaik analysis is performed 3 times. 
+
+\begin{verbatim}
+out <- mipp.seq(x=x.train, y=y.train, x.test=x.test, y.test=y.test,
+            n.fold=5, percent.cut=0.05, rule="lda", n.seq=3)
+
+\end{verbatim}
+
+
+For the colon cancer data, the sequntial analysis can be performed by the following arguments: 
+
+\begin{verbatim}
+out <- mipp.seq(x=x, y=y, n.fold=5, p.test=1/3, n.split=20, n.split.eval=100, 
+            percent.cut = 0.1 , rule="lda", n.seq=3)
+\end{verbatim}
+
+
+
 \vspace{.5in}
 {\large \bf Reference}
 \begin{itemize}

@@ -1,15 +1,15 @@
-\name{mipp}
-\alias{mipp}
+\name{mipp.seq}
+\alias{mipp.seq}
 \title{MiPP-based Classification}
 \description{
-Finds optimal sets of genes for classification
+sequentially finds optimal sets of genes for classification
 }
 \usage{
-mipp(x, y, x.test = NULL, y.test = NULL, probe.ID = NULL, 
+mipp.seq(x, y, x.test = NULL, y.test = NULL, probe.ID = NULL, 
     rule = "lda", method.cut = "t.test", percent.cut = 0.01, 
     model.sMiPP.margin = 0.01, min.sMiPP = 0.85, n.drops = 2, 
     n.fold = 5, p.test = 1/3, n.split = 20, 
-    n.split.eval = 100) 
+    n.split.eval = 100, n.seq=3, cutoff.sMiPP=0.7, remove.gene.each.model="all") 
 }
 
 \arguments{
@@ -32,7 +32,10 @@ addition to min.sMiPP criterion.; the default is 2.}
 \item{p.test}{partition percent of train and test samples when test samples are not available; the default is 1/3 for test set.}
 \item{n.split}{number of splits; the default is 20.}
 \item{n.split.eval}{numbr of splits for evalutation; the default is 100.}
-
+\item{n.seq}{Number of sequential gene selection}
+\item{cutoff.sMiPP}{cutoff point to select gene models based on 5 percent sMiPP}
+\item{remove.gene.each.model}{Re-run after removing all genes in the selected models if "all" 
+      and the first gene for each of the selected models if "first"}
 }
 
 \value{
@@ -43,7 +46,6 @@ addition to min.sMiPP criterion.; the default is 2.}
 \references{
 Soukup M, Cho H, and Lee JK (2005). Robust classification modeling on microarray data 
 using misclassification penalized posterior, Bioinformatics, 21 (Suppl): i423-i430.
- 
 
 Soukup M and Lee JK (2004). Developing optimal prediction models for cancer classification 
 using gene expression data, Journal of Bioinformatics and Computational Biology, 1(4) 681-694
@@ -75,11 +77,13 @@ y.test <- factor(c(rep("ALL",20),rep("AML",14)))
 
 
 #Compute MiPP
-out <- mipp(x=x.train, y=y.train, x.test=x.test, y.test=y.test, n.fold=5, percent.cut=0.05, rule="lda")
+out <- mipp.seq(x=x.train, y=y.train, x.test=x.test, y.test=y.test, n.fold=5, percent.cut=0.05, rule="lda", n.seq=3)
 
 #Print candidate models
 out$model
 
+#Print the genes selected
+out$genes.selected
 
 
 ##########
@@ -103,14 +107,18 @@ x <- x[,-c(51,55,45,49,56)]
 y <- y[ -c(51,55,45,49,56)]
 
 #Compute MiPP
-out <- mipp(x=x, y=y, n.fold=5, p.test=1/3, n.split=5, n.split.eval=100, 
-percent.cut= 0.1, rule="lda")
+out <- mipp.seq(x=x, y=y, n.fold=5, p.test=1/3, n.split=5, n.split.eval=100, 
+percent.cut= 0.1, rule="lda", n.seq=3)
+
 
 #Print candidate models for each split
 out$model
 
 #Print optimal models and independent evaluation for each split
 out$model.eval
+
+#Print the genes selected
+out$genes.selected
 
 }
 
