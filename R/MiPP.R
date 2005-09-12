@@ -251,7 +251,7 @@ cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval,
      out2[,1] <- apply(out.Er, 1, mean)
      out2[,2] <- apply(out.MiPP, 1, mean)
      out2[,3] <- apply(out.sMiPP, 1, mean)
-     out2[,4:6] <- t(apply(out.Er, 1, quantile, probs=c(0.05, 0.50, 0.95)))
+     out2[,4:6] <- t(apply(out.Er, 1, quantile, probs=c(0.95, 0.50, 0.05)))
      out2[,7:9] <- t(apply(out.sMiPP, 1, quantile, probs=c(0.05, 0.50, 0.95)))
 
      Split <- 1:n.split

@@ -11,7 +11,6 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
                  n.seq=3, cutoff.sMiPP=0.7, remove.gene.each.model="all"){
 
           
-     cat("Please wait...")         
      p.ID <- 1:nrow(x)
      if(length(probe.ID)==0) probe.ID <- 1:nrow(x)   
        
@@ -32,7 +31,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
        Seq <- c()
        for(iter in 1:n.seq) {
        
-           cat("Run "); cat(iter);  cat(" \n")
+           cat("Seq "); cat(iter);  cat(" \n")
            out <- mipp(x=x.sub, y=y,  x.test = x.test.sub, y.test = y.test, probe.ID=p.ID.sub, rule=rule, 
                  method.cut=method.cut, percent.cut = percent.cut, 
                  model.sMiPP.margin=model.sMiPP.margin, min.sMiPP=min.sMiPP, n.drops=n.drops,
@@ -80,7 +79,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
        Seq <- c()
        for(iter in 1:n.seq) {
        
-           cat("Run "); cat(iter);  cat(" \n")
+           cat("Seq "); cat(iter);  cat(" \n")
            out <- mipp(x=x.sub, y=y, probe.ID=p.ID.sub, rule=rule, 
                  method.cut=method.cut, percent.cut = percent.cut, 
                  model.sMiPP.margin=model.sMiPP.margin, min.sMiPP=min.sMiPP, n.drops=n.drops,
@@ -127,7 +126,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
 
        return(list(rule=rule, n.fold=n.fold, n.sample=n.sample, n.split=n.split, n.split.eval=n.split.eval, 
                     sMiPP.margin=model.sMiPP.margin, p.test=p.test,
-                    model=out$CV.out2, model.eval=out$CVCV.out2, genes.selected=best.genes)) 
+                    model=CV.out2, model.eval=CVCV.out2, genes.selected=best.genes)) 
 
      }
 
