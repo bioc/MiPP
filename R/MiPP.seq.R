@@ -30,7 +30,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
        p.ID.sub <- p.ID
        Seq <- c()
        for(iter in 1:n.seq) {
-       
+    
            cat("Seq "); cat(iter);  cat(" \n")
            out <- mipp(x=x.sub, y=y,  x.test = x.test.sub, y.test = y.test, probe.ID=p.ID.sub, rule=rule, 
                  method.cut=method.cut, percent.cut = percent.cut, 
@@ -55,7 +55,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
        out2$Gene <- probe.ID[out2$Gene]
        out2 <- cbind(Seq, out2)
        rownames(out2) <- 1:nrow(out2)
-       best.genes <- probe.ID[best.genes]
+       if(length(best.genes) > 0) best.genes <- probe.ID[best.genes]
     
        return(list(rule=rule, n.fold=n.fold, n.train.sample=n.train.sample, n.test.sample=n.test.sample, model=out2, genes.selected=best.genes)) 
 
@@ -98,9 +98,11 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
            
            nc <- ifelse(remove.gene.each.model=="first", 2, (n.sample+1))
            k <- which(CVCV.out2[,(1+n.sample+7)] >= cutoff.sMiPP)
-           best.genes <- sort(unique(as.numeric(na.omit(as.vector(as.matrix(CVCV.out2[k,2:nc]))))))           
-           x.sub <- x[-best.genes,]
-           p.ID.sub <- p.ID[-best.genes]
+           if(length(k) > 0) {
+              best.genes <- sort(unique(as.numeric(na.omit(as.vector(as.matrix(CVCV.out2[k,2:nc]))))))           
+              x.sub <- x[-best.genes,]
+              p.ID.sub <- p.ID[-best.genes]
+           }
        }           
 
  
@@ -121,8 +123,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
        Seq <- c() 
        for(i in 1:n.seq) Seq <- c(Seq, rep(i, n.split)) 
        CVCV.out2 <- cbind(Seq, CVCV.out2)
-
-       best.genes <- probe.ID[best.genes]
+       if(length(best.genes) > 0) best.genes <- probe.ID[best.genes]
 
        return(list(rule=rule, n.fold=n.fold, n.sample=n.sample, n.split=n.split, n.split.eval=n.split.eval, 
                     sMiPP.margin=model.sMiPP.margin, p.test=p.test,
