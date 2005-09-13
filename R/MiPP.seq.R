@@ -20,7 +20,6 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
 
        n.train.sample <- ncol(x) 
        n.test.sample  <- ncol(x.test)
-       best.genes <- c()  
        out2 <- data.frame(matrix(NA, 1, 9))
        colnames(out2) <- c("Order","Gene","Tr.ER","Tr.MiPP","Tr.sMiPP",
                               "Te.ER","Te.MiPP","Te.sMiPP","Select") 
@@ -29,6 +28,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
        x.test.sub <- x.test
        p.ID.sub <- p.ID
        Seq <- c()
+       best.genes <- c()  
        for(iter in 1:n.seq) {
     
            cat("Seq "); cat(iter);  cat(" \n")
@@ -77,6 +77,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
        x.sub <- x
        p.ID.sub <- p.ID
        Seq <- c()
+       best.genes <- c()
        for(iter in 1:n.seq) {
        
            cat("Seq "); cat(iter);  cat(" \n")
