@@ -8,12 +8,12 @@
 #
 #        Mat Soukup, HyungJun Cho, and Jae K. Lee
 #
-#                   Version 1.1.7 (2005-09-07)   
+#                   Version 1.1.8 (2005-09-14)   
 #
 ##########################################################################
 
 .First.lib <- function(lib, pkg) { 
-   cat("MiPP version 1.1.7 \n") 
+   cat("MiPP version 1.1.8 \n") 
    invisible()
    if(.Platform$OS.type=="windows" && require(Biobase) && interactive() 
    && .Platform$GUI=="Rgui") { addVigs2WinMenu("MiPP") }

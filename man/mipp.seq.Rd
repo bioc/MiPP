@@ -8,8 +8,8 @@ sequentially finds optimal sets of genes for classification
 mipp.seq(x, y, x.test = NULL, y.test = NULL, probe.ID = NULL, 
     rule = "lda", method.cut = "t.test", percent.cut = 0.01, 
     model.sMiPP.margin = 0.01, min.sMiPP = 0.85, n.drops = 2, 
-    n.fold = 5, p.test = 1/3, n.split = 20, 
-    n.split.eval = 100, n.seq=3, cutoff.sMiPP=0.7, remove.gene.each.model="all") 
+    n.fold = 5, p.test = 1/3, n.split = 20, n.split.eval = 100, 
+    n.seq=3, cutoff.sMiPP=0.7, remove.gene.each.model="all") 
 }
 
 \arguments{
@@ -32,8 +32,8 @@ addition to min.sMiPP criterion.; the default is 2.}
 \item{p.test}{partition percent of train and test samples when test samples are not available; the default is 1/3 for test set.}
 \item{n.split}{number of splits; the default is 20.}
 \item{n.split.eval}{numbr of splits for evalutation; the default is 100.}
-\item{n.seq}{Number of sequential gene selection}
-\item{cutoff.sMiPP}{cutoff point to select gene models based on 5 percent sMiPP}
+\item{n.seq}{Number of sequential gene model selection; the default is 3.}
+\item{cutoff.sMiPP}{Cutoff point of 5 percent sMiPP to select gene models}
 \item{remove.gene.each.model}{Re-run after removing all genes in the selected models if "all" 
       and the first gene for each of the selected models if "first"}
 }
@@ -41,6 +41,7 @@ addition to min.sMiPP criterion.; the default is 2.}
 \value{
 \item{model}{candiadate genes (for each split if no indep set is available}
 \item{model.eval}{Optimal sets of genes for each split when no indep set is available}
+\item{genes.selected}{a list of genes selected by sequential selection}
 }
 
 \references{

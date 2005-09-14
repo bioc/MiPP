@@ -317,27 +317,31 @@ S20    0.9924    0.9972
 
 
 \subsection{Sequential selection} 
-Good classifying genes may be masked by other better classifying genes, 
-so the genes may be discovered if the other genes are not present.  
-Therefore, it is worth selecting gene models after removing genes selected in the first run.
-The \Rpackage{MiPP} package also enables to sequentailly select gene models after removing genes selected in the previous runs.
+Good classifying (masked) genes may be masked by other better classifying (masking) genes, 
+so the masked genes may be discovered if the masking genes are not present.  
+Therefore, it is worth selecting gene models after removing genes selected in the previous runs.
+This sequential selection can be performed by manually removing the genes selected in the previous runs.
+For users' convenience, the \Rpackage{MiPP} package enables one to perform such a sequential selection process automatically many times.
 
-For the acute leukemia data, the sequntial analysis can be performed by the following arguments in the \Rfunction{mipp.seq} function: 
-The argument \Rfunarg{n.seq=3} means that the sequentaik analysis is performed 3 times. 
-
-\begin{verbatim}
-out <- mipp.seq(x=x.train, y=y.train, x.test=x.test, y.test=y.test,
-            n.fold=5, percent.cut=0.05, rule="lda", n.seq=3)
-
-\end{verbatim}
-
-
-For the colon cancer data, the sequntial analysis can be performed by the following arguments: 
+For the acute leukemia data with an independent test set, the sequntial analysis can be performed by the following arguments 
+in the \Rfunction{mipp.seq} function: 
 
 \begin{verbatim}
-out <- mipp.seq(x=x, y=y, n.fold=5, p.test=1/3, n.split=20, n.split.eval=100, 
-            percent.cut = 0.1 , rule="lda", n.seq=3)
+out <- mipp.seq(x=x.train, y=y.train, x.test=x.test, y.test=y.test, rule="lda", n.seq=3)
 \end{verbatim}
+
+The argument \Rfunarg{n.seq=3} means that the sequential selection is performed 3 times 
+after removing all the genes in the selected gene models. 
+
+For the colon cancer data with no independent test set, the sequntial analysis can be performed by the following arguments: 
+
+\begin{verbatim}
+out <- mipp.seq(x=x, y=y, n.seq=3, cutoff.sMiPP=0.7)
+\end{verbatim}
+
+By the argument \Rfunarg{cutoff.sMiPP=0.7}, the gene models with 5\% sMiPP $> 0.7$ are selected, 
+so all the genes in the selected models are removed for the next run. 
+All the other arguments in the \Rfunction{mipp.seq} function can also used in the \Rfunction{mipp.seq} function.
 
 
 
