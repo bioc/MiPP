@@ -75,7 +75,7 @@ y.test <- factor(c(rep("ALL",20),rep("AML",14)))
 
 
 #Compute MiPP
-out <- mipp(x=x.train, y=y.train, x.test=x.test, y.test=y.test, n.fold=5, percent.cut=0.05, rule="lda")
+out <- mipp(x=x.train, y=y.train, x.test=x.test, y.test=y.test, probe.ID = 1:nrow(x.train), n.fold=5, percent.cut=0.05, rule="lda")
 
 #Print candidate models
 out$model
@@ -103,7 +103,7 @@ x <- x[,-c(51,55,45,49,56)]
 y <- y[ -c(51,55,45,49,56)]
 
 #Compute MiPP
-out <- mipp(x=x, y=y, n.fold=5, p.test=1/3, n.split=5, n.split.eval=100, 
+out <- mipp(x=x, y=y, probe.ID = 1:nrow(x), n.fold=5, p.test=1/3, n.split=5, n.split.eval=100, 
 percent.cut= 0.1, rule="lda")
 
 #Print candidate models for each split

@@ -6,14 +6,13 @@
 #
 #                            by
 #
-#        Mat Soukup, HyungJun Cho, and Jae K. Lee
+#        HyungJun Cho, Mat Soukup, and Jae K. Lee
 #
-#                   Version 1.1.8 (2005-09-14)   
+#                   Version 1.2.0 (2006-03-01)   
 #
 ##########################################################################
 
-.First.lib <- function(lib, pkg) { 
-   cat("MiPP version 1.1.8 \n") 
+.First.lib <- function(lib, pkg) {  
    invisible()
    if(.Platform$OS.type=="windows" && require(Biobase) && interactive() 
    && .Platform$GUI=="Rgui") { addVigs2WinMenu("MiPP") }
@@ -30,8 +29,12 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
                  model.sMiPP.margin=0.01, min.sMiPP=0.85, n.drops=2,
                  n.fold=5, p.test=1/3, n.split=20, n.split.eval=100){
 
-     if(length(probe.ID)==0) probe.ID <- 1:nrow(x)
+     if(is.null(probe.ID)==TRUE) probe.ID <- 1:nrow(x)
      nfold <- max(2, min(n.fold, nrow(x))) # 2 ~ N
+     if(length(unique(y)) < 2)  stop("The number of classes must be >=2")
+     if((length(unique(y)) > 2) & (rule !="lda") & (rule !="qda")) { 
+         stop("The rule should be 'lda' or 'qda' for multi-class problem.")
+     }     
      if(rule=="lda" | rule=="qda") require(MASS)
      if(rule=="svmlin" | rule=="svmrbf") require(e1071)
      cat("Please wait")
@@ -39,7 +42,7 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
 
      #####################################     
      #when there is an indepedent test set
-     if(length(x.test) > 0) {
+     if(is.null(x.test) == FALSE) {
         cat(".")
 
         #Data manipulation
@@ -90,7 +93,7 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
 
      #####################################
      #when there is no indepedent test set
-     if(length(x.test)==0) {  
+     if(is.null(x.test) == TRUE) {
 
 
         #Data manipulation

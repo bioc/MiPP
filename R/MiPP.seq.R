@@ -12,11 +12,11 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
 
           
      p.ID <- 1:nrow(x)
-     if(length(probe.ID)==0) probe.ID <- 1:nrow(x)   
+     if(is.null(probe.ID) == TRUE) probe.ID <- 1:nrow(x)   
        
      #####################################     
      #when there is an indepedent test set
-     if(length(x.test) > 0) {
+     if(is.null(x.test) == FALSE) {
 
        n.train.sample <- ncol(x) 
        n.test.sample  <- ncol(x.test)
@@ -43,10 +43,18 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
      
            k <- which(out$model$Select=="**")
            nc <- ifelse(remove.gene.each.model=="first", 1, k)
-           best.genes <- sort(unique(c(best.genes, out$model$Gene[1:nc])))           
-           x.sub <- x[-best.genes,]
-           x.test.sub <- x.test[-best.genes,]
-           p.ID.sub <- p.ID[-best.genes]
+           best.genes <- sort(unique(c(best.genes, out$model$Gene[1:nc])))  
+           if(length(best.genes) < nrow(x)) { 
+               x.sub <- x[-best.genes,]
+               x.test.sub <- x.test[-best.genes,]
+               p.ID.sub <- p.ID[-best.genes]
+           }
+           
+           if((iter < n.seq) & (nrow(x)-length(best.genes) <= 2)) {
+              cat("Two or less genes were left for the next Seq runs, so your run stopped after Seq", iter)
+              break
+           }    
+
 
        }           
 
@@ -64,7 +72,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
 
      #####################################
      #when there is no indepedent test set
-     if(length(x.test)==0) {  
+     if(is.null(x.test) == TRUE) {
 
        n.sample <- ncol(x) 
        CV.out2 <- data.frame(matrix(NA, 1, 10))
@@ -101,9 +109,17 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
            k <- which(CVCV.out2[,(1+n.sample+7)] >= cutoff.sMiPP)
            if(length(k) > 0) {
               best.genes <- sort(unique(as.numeric(na.omit(as.vector(as.matrix(CVCV.out2[k,2:nc]))))))           
-              x.sub <- x[-best.genes,]
-              p.ID.sub <- p.ID[-best.genes]
+              if(length(best.genes) < nrow(x)) { 
+                 x.sub <- x[-best.genes,]
+                 p.ID.sub <- p.ID[-best.genes]
+              }
            }
+           
+           if((iter < n.seq) & (nrow(x)-length(best.genes) <= 2)) {
+              cat("Warning: Two or less genes were left for the next Seq runs, so your run stopped after Seq", iter)
+              break
+           }    
+
        }           
 
  
