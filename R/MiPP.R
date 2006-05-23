@@ -205,7 +205,7 @@ cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval,
      
      tmp <- apply(gene.list, 2, is.na)
      i <- which(apply(tmp, 2, sum) >= n.split)
-     gene.list <- gene.list[,-i]
+     gene.list <- matrix(gene.list[,-i]) #fixed on 05/23/2006
      CV.out <- CV.out[-c(1:n.split),]
 
 
