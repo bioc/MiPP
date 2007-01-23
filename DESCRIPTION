@@ -1,12 +1,13 @@
 Package: MiPP
-Version: 1.7.0
-Date: 2006-03-01
+Version: 1.5.0
+Date: 2007-01-01
 Title: Misclassification Penalized Posterior Classification
-Author: HyungJun Cho <hcho@virginia.edu>,
+Author: HyungJun Cho <hj4cho@korea.ac.kr>,
+        Sukwoo Kim <s4kim@korea.ac.kr>,
         Mat Soukup <soukup@fda.gov>, and
         Jae K. Lee <jaeklee@virginia.edu>
-Maintainer: HyungJun Cho <hcho@virginia.edu>
-Depends: R (>= 2.0.1), Biobase, e1071
+Maintainer: Sukwoo Kim <s4kim@korea.ac.kr>
+Depends: R (>= 2.4), Biobase, e1071
 Description: This package finds optimal sets of genes that seperate samples into multiple classes.
 License: GPL version 2 or newer
 URL:http://www.healthsystem.virginia.edu/internet/hes/biostat/bioinformatics/
