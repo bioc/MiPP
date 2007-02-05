@@ -12,7 +12,7 @@ get.mipp.svm.linear <- function(x.train, y.train, x.test, y.test){
 
 	fofx <- numeric(length(y.test))
 	for(i in 1:length(y.test)){
-		xin <- x.test[i,]
+		xin <- x.test[i,,drop=FALSE]
 		fofx[i] <- linearkernel.decision.function(xin, x.train, fit)
 	}
 
@@ -41,10 +41,10 @@ linearkernel.decision.function <-function(newx, oldx, svmobj) {
     # Extract b:
     	svconstant <- -1*svmobj$rho   
     # Get the support vectors
-    	svdata <- oldx[svmobj$index,]
+    	svdata <- oldx[svmobj$index,,drop=FALSE]
     # Reformat the new x
     	xt <- newx
-    	nrowxt <- length(oldx[1,])
+    	nrowxt <- length(oldx[1,,drop=FALSE])
     	dim(xt) <- c(nrowxt,1)   
     # linear kernel:
     	prods <- svdata %*% xt   

@@ -45,8 +45,8 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
            nc <- ifelse(remove.gene.each.model=="first", 1, k)
            best.genes <- sort(unique(c(best.genes, out$model$Gene[1:nc])))  
            if(length(best.genes) < nrow(x)) { 
-               x.sub <- x[-best.genes,]
-               x.test.sub <- x.test[-best.genes,]
+               x.sub <- x[-best.genes,,drop=FALSE]
+               x.test.sub <- x.test[-best.genes,,drop=FALSE]
                p.ID.sub <- p.ID[-best.genes]
            }
            
@@ -59,7 +59,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
        }           
 
        ###GENE ID
-       out2 <- out2[-1,]
+       out2 <- out2[-1,,drop=FALSE]
        out2$Gene <- probe.ID[out2$Gene]
        out2 <- cbind(Seq, out2)
        rownames(out2) <- 1:nrow(out2)
@@ -108,9 +108,9 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
            nc <- ifelse(remove.gene.each.model=="first", 2, (n.sample+1))
            k <- which(CVCV.out2[,(1+n.sample+7)] >= cutoff.sMiPP)
            if(length(k) > 0) {
-              best.genes <- sort(unique(as.numeric(na.omit(as.vector(as.matrix(CVCV.out2[k,2:nc]))))))           
+              best.genes <- sort(unique(as.numeric(na.omit(as.vector(as.matrix(CVCV.out2[k,2:nc,drop=FALSE]))))))           
               if(length(best.genes) < nrow(x)) { 
-                 x.sub <- x[-best.genes,]
+                 x.sub <- x[-best.genes,,drop=FALSE]
                  p.ID.sub <- p.ID[-best.genes]
               }
            }
@@ -126,7 +126,7 @@ mipp.seq <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
 
        ###GENE ID
        CV.out2$Gene <- probe.ID[CV.out2$Gene]
-       kk <- as.numeric(as.vector(as.matrix(CVCV.out2[,2:(n.sample+1)])))           
+       kk <- as.numeric(as.vector(as.matrix(CVCV.out2[,2:(n.sample+1),drop=FALSE])))           
        CVCV.out2[,2:(n.sample+1)] <- probe.ID[kk]
        
        #Remove missing columns and add seq

@@ -69,8 +69,8 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         }
         if(length(ii) < 2) stop("There are too small number of candidate genes.")
 
-        x.tr <- x[,ii]; y.tr <- y
-        x.te <- x.test[,ii]; y.te <- y.test
+        x.tr <- x[,ii,drop=FALSE]; y.tr <- y
+        x.te <- x.test[,ii,drop=FALSE]; y.te <- y.test
         out <- mipp.rule(x.train=x.tr, y.train=y.tr, x.test=x.te, y.test=y.te, 
                          nfold=nfold, min.sMiPP=min.sMiPP, n.drops=n.drops, rule=rule) 
         out[,2] <- probe.ID[ii[out[,2]]]
@@ -113,7 +113,7 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         }
         if(length(ii) < 2) stop("There are too small number of candidate genes.")
 
-        x.tr <- x[,ii] 
+        x.tr <- x[,ii,drop=FALSE] 
         y.tr <- y
         out <- cv.mipp.rule(x=x.tr, y=y.tr, nfold=nfold, p.test=p.test, n.split=n.split, n.split.eval=n.split.eval,
                                model.sMiPP.margin=model.sMiPP.margin, min.sMiPP=min.sMiPP, n.drops=n.drops, rule=rule)
@@ -123,7 +123,7 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
         for(i in 1:n.split) {
             k <- ncol(out$CVCV.out)-9 ###note
             k <- max(which(!is.na(out$CVCV.out[i,1:k])))
-            kk <- as.numeric(out$CVCV.out[i,2:k])
+            kk <- as.numeric(out$CVCV.out[i, 2:k, drop=FALSE])
             out$CVCV.out[i,2:k] <- probe.ID[ii[kk]]
         }
 
@@ -185,8 +185,8 @@ cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval,
 
         y.train <- y[-i.test]
         y.test  <- y[ i.test]
-        x.train <- x[-i.test,]
-        x.test  <- x[ i.test,]
+        x.train <- x[-i.test,,drop=FALSE]
+        x.test  <- x[ i.test,,drop=FALSE]
         if(is.data.frame(x.train)==FALSE) x.train <- data.frame(x.train)
         if(is.data.frame(x.test)==FALSE) x.test <- data.frame(x.test)
 
@@ -205,8 +205,8 @@ cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval,
      
      tmp <- apply(gene.list, 2, is.na)
      i <- which(apply(tmp, 2, sum) >= n.split)
-     gene.list <- gene.list[,-i] #fixed on 01/17/2007
-     CV.out <- CV.out[-c(1:n.split),]
+     gene.list <- gene.list[,-i,drop=FALSE] #fixed on 01/17/2007
+     CV.out <- CV.out[-c(1:n.split),,drop=FALSE]
 
 
      ###################################
@@ -229,17 +229,17 @@ cv.mipp.rule <- function(x, y, nfold, p.test, n.split, n.split.eval,
 
         y.train <- y[-i.test]
         y.test  <- y[ i.test]
-        x.train <- x[-i.test,]
-        x.test  <- x[ i.test,]
+        x.train <- x[-i.test,,drop=FALSE]
+        x.test  <- x[ i.test,,drop=FALSE]
         if(is.data.frame(x.train)==FALSE) x.train <- data.frame(x.train)
         if(is.data.frame(x.test)==FALSE) x.test <- data.frame(x.test)
 
         for(jj in 1:n.split) { #Split  
 
-            k <- max(which(!is.na(gene.list[jj,])==TRUE))
-            kk <- as.numeric(gene.list[jj,1:k])
-            xx.train <- x.train[,kk]
-            xx.test  <- x.test[,kk]
+            k <- max(which(!is.na(gene.list[jj,,drop=FALSE])==TRUE))
+            kk <- as.numeric(gene.list[jj,1:k,drop=FALSE])
+            xx.train <- x.train[,kk,drop=FALSE]
+            xx.test  <- x.test[,kk,drop=FALSE]
             if(is.data.frame(xx.train)==FALSE) xx.train <- data.frame(xx.train)
             if(is.data.frame(xx.test)==FALSE) xx.test <- data.frame(xx.test)
 
@@ -300,8 +300,8 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
         y.tr <- y.train[id!=i]
         y.te <- y.train[id==i]
         for(j in 1:n.gene) {
-             x.tr <- data.frame(x.train[id!=i,j])
-             x.te <- data.frame(x.train[id==i,j]) 
+             x.tr <- data.frame(x.train[id!=i,j,drop=FALSE])
+             x.te <- data.frame(x.train[id==i,j,drop=FALSE]) 
              out[i,j] <- get.mipp(x.tr, y.tr, x.te, y.te, rule=rule)$MiPP
         }
      }
@@ -311,13 +311,13 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
      pick.gene <- as.numeric(colnames(x.train)[pick.gene])
      opt.genes <- c(opt.genes, pick.gene)
 
-     x.train.cand <- x.train[,-opt.genes]
-     x.train.opt  <- data.frame(x.train[,opt.genes])
+     x.train.cand <- x.train[,-opt.genes,drop=FALSE]
+     x.train.opt  <- data.frame(x.train[,opt.genes,drop=FALSE])
      colnames(x.train.opt) <- opt.genes
 
      #Evaluate by test set
-     xx.train <- data.frame(x.train[,opt.genes])
-     xx.test  <- data.frame(x.test[,opt.genes])
+     xx.train <- data.frame(x.train[,opt.genes,drop=FALSE])
+     xx.test  <- data.frame(x.test[,opt.genes,drop=FALSE])
      tmp <- get.mipp(xx.train, y.train, xx.test, y.test, rule=rule)
      opt.Er    <-c(opt.Er, tmp$ErrorRate)
      opt.MiPP  <-c(opt.MiPP, tmp$MiPP)
@@ -341,8 +341,8 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
             y.tr <- y.train[id!=i]
             y.te <- y.train[id==i]
             for(j in 1:n.gene.cand) {
-                x.tr <- data.frame(x.train.opt[id!=i,], x.train.cand[id!=i,j])
-                x.te <- data.frame(x.train.opt[id==i,], x.train.cand[id==i,j])
+                x.tr <- data.frame(x.train.opt[id!=i,,drop=FALSE], x.train.cand[id!=i,j,drop=FALSE])
+                x.te <- data.frame(x.train.opt[id==i,,drop=FALSE], x.train.cand[id==i,j,drop=FALSE])
                 out[i,j] <- get.mipp(x.tr,y.tr, x.te, y.te, rule=rule)$MiPP
             }
         }
@@ -351,13 +351,13 @@ mipp.rule <- function(x.train, y.train, x.test=NULL, y.test=NULL, nfold=5, min.s
         pick.gene <- min(which(out.sum >= max(out.sum)))
         pick.gene <- as.numeric(colnames(x.train.cand)[pick.gene])
         opt.genes <- c(opt.genes, pick.gene)
-        x.train.opt  <- x.train[, opt.genes]
-        x.train.cand <- x.train[,-opt.genes]
+        x.train.opt  <- x.train[, opt.genes,drop=FALSE]
+        x.train.cand <- x.train[,-opt.genes,drop=FALSE]
 
 
         #Evaluate by test set
-        xx.train <- x.train[,opt.genes]
-        xx.test  <- x.test[,opt.genes]
+        xx.train <- x.train[,opt.genes,drop=FALSE]
+        xx.test  <- x.test[,opt.genes,drop=FALSE]
         tmp <- get.mipp(xx.train, y.train, xx.test,  y.test, rule=rule)
         opt.Er    <-c(opt.Er, tmp$ErrorRate)
         opt.MiPP  <-c(opt.MiPP, tmp$MiPP)

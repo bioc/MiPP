@@ -13,7 +13,7 @@ get.mipp.svm.rbf <- function(x.train, y.train, x.test, y.test){
 
 	fofx <- numeric(length(y.test))
 	for(i in 1:length(y.test)){
-		xin <- x.test[i,]
+		xin <- x.test[i,,drop=FALSE]
 		fofx[i] <- rbfkernel.decision.function(xin, x.train, fit)
 	}
 
@@ -43,11 +43,11 @@ rbfkernel.decision.function <- function(newx, oldx, svmobj) {
     # Extract gamma:
     	svgamma <- svmobj$gamma
     # Get the support vectors
-    	svdata <- oldx[svmobj$index,]
+    	svdata <- oldx[svmobj$index,,drop=FALSE]
     # How many support vectors?
     	numsv <- length(svmobj$index)
     # reformat newx
-    	p <- length(oldx[1,])
+    	p <- length(oldx[1,,drop=FALSE])
     	xt <- matrix(0, nrow=numsv, ncol=p)
     	for(i in 1:p){
         	xt[,i] <- rep(newx[i], numsv)

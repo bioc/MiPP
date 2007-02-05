@@ -23,7 +23,7 @@ get.mipp.lda <- function(x.train, y.train, x.test, y.test){
      post.prob <-0
      for(j in 1:n.class) {
          i <- which(True.class == u.class[j]) 
-         post.prob <- post.prob + sum(out$post[i,j])
+         post.prob <- post.prob + sum(out$post[i,j,drop=FALSE])
      }
 
      N <- length(True.class) 
