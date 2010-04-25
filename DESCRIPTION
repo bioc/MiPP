@@ -7,7 +7,8 @@ Author: HyungJun Cho <hj4cho@korea.ac.kr>,
         Mat Soukup <soukup@fda.gov>, and
         Jae K. Lee <jaeklee@virginia.edu>
 Maintainer: Sukwoo Kim <s4kim@korea.ac.kr>
-Depends: R (>= 2.4), Biobase, e1071,MASS
+Depends: R (>= 2.4)
+Imports: Biobase, e1071, MASS, stats
 Description: This package finds optimal sets of genes that seperate samples into two or more classes.
 License: GPL (>= 2)
 URL:http://www.healthsystem.virginia.edu/internet/hes/biostat/bioinformatics/

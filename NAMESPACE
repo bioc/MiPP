@@ -1,0 +1,10 @@
+importFrom(Biobase, addVigs2WinMenu)
+importFrom(e1071, svm)
+importFrom(MASS, lda, qda)
+importFrom(stats, anova, glm, lm, na.exclude, na.omit, predict,
+           quantile, runif, t.test)
+
+export(cv.mipp.rule, get.mipp, get.mipp.lda, get.mipp.logistic, get.mipp.qda,
+       get.mipp.svm.linear, get.mipp.svm.rbf, linearkernel.decision.function,
+       mipp, mipp.preproc, mipp.rule, mipp.seq, pre.select, quant.normal,
+       quant.normal2, rbfkernel.decision.function)

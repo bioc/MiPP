@@ -14,8 +14,8 @@
 
 .First.lib <- function(lib, pkg) {  
    invisible()
-   if(.Platform$OS.type=="windows" && require(Biobase) && interactive() 
-   && .Platform$GUI=="Rgui") { addVigs2WinMenu("MiPP") }
+   if(.Platform$OS.type=="windows" && interactive() &&
+      .Platform$GUI=="Rgui") { addVigs2WinMenu("MiPP") }
 }
 
 
@@ -35,8 +35,6 @@ mipp <- function(x, y, x.test=NULL, y.test=NULL, probe.ID=NULL, rule="lda",
      if((length(unique(y)) > 2) & (rule !="lda") & (rule !="qda")) { 
          stop("The rule should be 'lda' or 'qda' for multi-class problem.")
      }     
-     if(rule=="lda" | rule=="qda") require(MASS)
-     if(rule=="svmlin" | rule=="svmrbf") require(e1071)
      cat("Please wait")
 
 
